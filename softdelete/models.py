@@ -96,13 +96,13 @@ class SoftDeleteManager(models.Manager):
 
     def get_query_set(self):
         qs = super(SoftDeleteManager, self).get_query_set().filter(
-            deleted_at__isnull=True)
+            date_deleted__isnull=True)
         qs.__class__ = SoftDeleteQuerySet
         return qs
 
     def get_queryset(self):
         qs = super(SoftDeleteManager, self).get_queryset().filter(
-            deleted_at__isnull=True)
+            date_deleted__isnull=True)
         qs.__class__ = SoftDeleteQuerySet
         return qs
 
@@ -115,7 +115,7 @@ class SoftDeleteManager(models.Manager):
         return qs
 
     def deleted_set(self):
-        qs = self._get_base_queryset().filter(deleted_at__isnull=0)
+        qs = self._get_base_queryset().filter(date_deleted__isnull=0)
         qs.__class__ = SoftDeleteQuerySet
         return qs
 
@@ -135,7 +135,7 @@ class SoftDeleteManager(models.Manager):
 
 
 class SoftDeleteObject(models.Model):
-    deleted_at = models.DateTimeField(blank=True, null=True, default=None)
+    date_deleted = models.DateTimeField(blank=True, null=True, default=None)
     objects = SoftDeleteManager()
 
     class Meta:
@@ -149,16 +149,16 @@ class SoftDeleteObject(models.Model):
         self.__dirty = False
 
     def get_deleted(self):
-        return self.deleted_at is not None
+        return self.date_deleted is not None
 
     def set_deleted(self, d):
         """Called via the admin interface (if user checks the "deleted" checkox)"""
-        if d and not self.deleted_at:
+        if d and not self.date_deleted:
             self.__dirty = True
-            self.deleted_at = timezone.now()
-        elif not d and self.deleted_at:
+            self.date_deleted = timezone.now()
+        elif not d and self.date_deleted:
             self.__dirty = True
-            self.deleted_at = None
+            self.date_deleted = None
 
     deleted = property(get_deleted, set_deleted)
 
@@ -185,7 +185,7 @@ class SoftDeleteObject(models.Model):
                     getattr(self, rel).__class__.objects.all().delete()
 
     def delete(self, *args, **kwargs):
-        if self.deleted_at:
+        if self.date_deleted:
             logging.debug("HARD DELETEING type %s, %s", type(self), self)
             try:
                 cs = ChangeSet.objects.get(
@@ -221,7 +221,7 @@ class SoftDeleteObject(models.Model):
                 changeset=cs,
                 content_type=ContentType.objects.get_for_model(self),
                 object_id=self.pk)
-            self.deleted_at = timezone.now()
+            self.date_deleted = timezone.now()
             self.save()
             all_related = [
                 f for f in self._meta.get_fields()
@@ -242,7 +242,7 @@ class SoftDeleteObject(models.Model):
         pre_undelete.send(sender=self.__class__,
                           instance=self,
                           using=using)
-        self.deleted_at = None
+        self.date_deleted = None
         self.save()
         post_undelete.send(sender=self.__class__,
                            instance=self,
