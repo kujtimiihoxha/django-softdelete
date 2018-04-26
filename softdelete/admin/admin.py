@@ -89,7 +89,7 @@ class SoftDeleteRecordAdmin(admin.ModelAdmin):
     def has_delete_permission(self, *args, **kwargs):
         return False
 
-    def record_as_json(self):
+    def record_as_json(self, *args, **kwargs):
         return serializers.serialize("json", self.model.record)
 
 
