@@ -1,5 +1,6 @@
+import json
+
 from django.contrib import admin
-from django.core import serializers
 from django.http import HttpResponseRedirect
 
 from softdelete.admin.forms import *
@@ -90,7 +91,7 @@ class SoftDeleteRecordAdmin(admin.ModelAdmin):
         return False
 
     def record_as_json(self, *args, **kwargs):
-        return serializers.serialize("json", self.model.record)
+        return json.dumps(self.model.record.__dict__)
 
 
 class ChangeSetAdmin(admin.ModelAdmin):
