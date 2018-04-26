@@ -1,6 +1,7 @@
 import json
 
 from django.contrib import admin
+from django.core import serializers
 from django.http import HttpResponseRedirect
 
 from softdelete.admin.forms import *
@@ -69,7 +70,7 @@ class SoftDeleteRecordInline(admin.TabularInline):
 class SoftDeleteRecordAdmin(admin.ModelAdmin):
     model = SoftDeleteRecord
     form = SoftDeleteRecordAdminForm
-    list_display = ['created_date', 'content_type', 'object_id', 'record_as_json']
+    list_display = ['created_date', 'content_type', 'object_id', 'record']
     actions = ['soft_undelete']
 
     def soft_undelete(self, request, queryset):
@@ -89,9 +90,6 @@ class SoftDeleteRecordAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, *args, **kwargs):
         return False
-
-    def record_as_json(self, *args, **kwargs):
-        return json.dumps(self.model.record.__dict__)
 
 
 class ChangeSetAdmin(admin.ModelAdmin):
