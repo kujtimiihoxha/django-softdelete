@@ -1,19 +1,14 @@
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.conf import settings
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.core.urlresolvers import reverse
-from django.core import serializers
-from django.contrib import auth
 from django.contrib.auth.decorators import permission_required
-from django.forms.models import inlineformset_factory
-from django.views.generic import *
-from django.views.generic.base import TemplateResponseMixin, View
-from django.views.decorators.csrf import csrf_exempt
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import *
+
 from softdelete.forms import *
 from softdelete.models import *
-import logging
+
 
 class ProtectedView(object):
     @method_decorator(permission_required('softdelete.can_undelete'))
@@ -25,6 +20,7 @@ class ProtectedView(object):
         context['request'] = self.request
         return context
 
+
 class ChangeSetList(ProtectedView, ListView):
     model = ChangeSet
 
@@ -34,11 +30,13 @@ class ChangeSetList(ProtectedView, ListView):
     def get_queryset(self):
         return self.model.objects.all()
 
+
 class ChangeSetDetail(ProtectedView, DetailView):
     model = ChangeSet
 
     def get_object(self):
         return get_object_or_404(ChangeSet, pk=self.kwargs['changeset_pk'])
+
 
 class ChangeSetUpdate(ProtectedView, UpdateView):
     model = ChangeSet

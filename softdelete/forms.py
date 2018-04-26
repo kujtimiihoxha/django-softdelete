@@ -1,6 +1,6 @@
 from django.forms import *
+
 from softdelete.models import *
-import logging
 
 
 class ChangeSetForm(ModelForm):

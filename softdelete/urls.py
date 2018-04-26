@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+
 from softdelete.views import *
 
 urlpatterns = [
@@ -14,7 +15,9 @@ urlpatterns = [
 ]
 
 import sys
+
 if 'test' in sys.argv:
     from django.contrib import admin
+
     admin.autodiscover()
     urlpatterns.append(url(r'^admin/', include(admin.site.urls)))

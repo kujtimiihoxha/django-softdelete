@@ -1,13 +1,13 @@
 # encoding: utf-8
 import datetime
+
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
+
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
         # Adding model 'ChangeSet'
         db.create_table('softdelete_changeset', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -20,7 +20,8 @@ class Migration(SchemaMigration):
         # Adding model 'RecordSet'
         db.create_table('softdelete_recordset', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('changeset', self.gf('django.db.models.fields.related.ForeignKey')(related_name='recordsets', to=orm['softdelete.ChangeSet'])),
+            ('changeset', self.gf('django.db.models.fields.related.ForeignKey')(related_name='recordsets',
+                                                                                to=orm['softdelete.ChangeSet'])),
             ('created_date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.utcnow)),
             ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
@@ -30,9 +31,7 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'RecordSet', fields ['changeset', 'content_type', 'object_id']
         db.create_unique('softdelete_recordset', ['changeset_id', 'content_type_id', 'object_id'])
 
-
     def backwards(self, orm):
-        
         # Removing unique constraint on 'RecordSet', fields ['changeset', 'content_type', 'object_id']
         db.delete_unique('softdelete_recordset', ['changeset_id', 'content_type_id', 'object_id'])
 
@@ -42,10 +41,10 @@ class Migration(SchemaMigration):
         # Deleting model 'RecordSet'
         db.delete_table('softdelete_recordset')
 
-
     models = {
         'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
+            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)",
+                     'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -53,15 +52,18 @@ class Migration(SchemaMigration):
         },
         'softdelete.changeset': {
             'Meta': {'object_name': 'ChangeSet'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+            'content_type': (
+            'django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'created_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.utcnow'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'object_id': ('django.db.models.fields.PositiveIntegerField', [], {})
         },
         'softdelete.recordset': {
             'Meta': {'unique_together': "(('changeset', 'content_type', 'object_id'),)", 'object_name': 'RecordSet'},
-            'changeset': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'recordsets'", 'to': "orm['softdelete.ChangeSet']"}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+            'changeset': ('django.db.models.fields.related.ForeignKey', [],
+                          {'related_name': "'recordsets'", 'to': "orm['softdelete.ChangeSet']"}),
+            'content_type': (
+            'django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'created_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.utcnow'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'object_id': ('django.db.models.fields.PositiveIntegerField', [], {})
