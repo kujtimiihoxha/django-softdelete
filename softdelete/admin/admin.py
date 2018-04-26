@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
-
+from django.core import serializers
 from softdelete.admin.forms import *
 
 
@@ -88,6 +88,9 @@ class SoftDeleteRecordAdmin(admin.ModelAdmin):
     def has_delete_permission(self, *args, **kwargs):
         return False
 
+    def encode_record(self):
+        # do something with self.some_field
+        return serializers.serialize("json", self.model.record)
 
 class ChangeSetAdmin(admin.ModelAdmin):
     model = ChangeSet
